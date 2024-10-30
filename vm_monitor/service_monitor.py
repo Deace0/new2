@@ -17,7 +17,6 @@ class ServiceMonitor:
         self.logger = logger
         self.whitelist_file = os.path.join(config["log_directory"], config["service_monitor"]["whitelist_file"])
         self.check_interval = config["service_monitor"]["check_interval"]
-
         self.whitelisted_services = self.load_whitelist()
 
     def load_whitelist(self):
@@ -54,16 +53,24 @@ class ServiceMonitor:
     def monitor_services(self):
         """
         Monitors services to detect any new ones not in the whitelist.
+        Logs if there are no changes detected.
         """
         while True:
             try:
                 active_services = self.get_active_services()
+                new_services_detected = False
+                
                 for service in active_services:
                     if service not in self.whitelisted_services:
                         self.logger.warning(f"New service detected: {service}")
                         self.whitelisted_services.append(service)
                         self.update_whitelist_file(service)
-
+                        new_services_detected = True
+                
+                # Log if no new services were detected
+                if not new_services_detected:
+                    self.logger.info("No new services detected. All active services are in the whitelist.")
+                
                 time.sleep(self.check_interval)
             except Exception as e:
                 self.logger.error(f"Error while monitoring services: {str(e)}")
