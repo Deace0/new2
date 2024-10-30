@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "monitor-agent"
+version = "0.1.0"
+description = "Agent"
+authors = ["DBG-code <damonbon6@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "vm_monitor" }
+]
+
+[tool.poetry.dependencies]
+python = "3.12.3"
+pytest = "^8.3.2"
+psutil = "^6.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

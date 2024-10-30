@@ -1,0 +1,18 @@
+{
+    "log_directory": "./logs",
+    "users_monitor": {
+        "snapshot_file": "users_snapshot.txt",
+        "check_interval": 60
+    },
+    "service_monitor": {
+        "whitelist_file": "service_whitelist.txt",
+        "check_interval": 60
+    },
+    "iptables_monitor": {
+        "snapshot_file": "iptables_snapshot.txt",
+        "check_interval": 60
+    },
+    "cpu_threshold": 90,
+    "disk_threshold": 85,
+    "memory_threshold": 80
+}
