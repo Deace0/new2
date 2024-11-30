@@ -1,6 +1,6 @@
 {
     "log_directory": "./logs",
-    
+
     "cpu_threshold": 85,
     "memory_threshold": 80,
     "disk_threshold": 90,
@@ -21,5 +21,10 @@
         "snapshot_file": "file_snapshot.txt",
         "monitored_files": ["/etc/passwd", "/etc/shadow", "/etc/hosts"],
         "check_interval": 60
+    },
+    "ssh_monitor": {
+        "log_file": "/var/log/auth.log",
+        "check_interval": 5
     }
+
 }
