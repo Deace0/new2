@@ -12,7 +12,7 @@ class MemoryMonitor:
             config (dict): Configuration dictionary for memory settings.
         """
         self.logger = logger
-        self.memory_threshold = config.get("memory_threshold", 80)  # Default to 80% if not specified
+        self.memory_threshold = config.get("memory_threshold", 80)  
 
     def get_usage(self) -> float | None:
         """

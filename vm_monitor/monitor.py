@@ -7,6 +7,8 @@ from vm_monitor.memory_monitor import MemoryMonitor
 from vm_monitor.disk_monitor import DiskMonitor
 from vm_monitor.iptables_monitor import IptablesMonitor
 from vm_monitor.user_monitor import UsersMonitor
+from vm_monitor.file_monitor import FileIntegrityMonitor
+
 
 class Monitor:
     def __init__(self, config_file: str = "config.json"):
@@ -26,6 +28,7 @@ class Monitor:
         self.memory_monitor = MemoryMonitor(config=self.config)
         self.disk_monitor = DiskMonitor(config=self.config)
         self.cpu_monitor = CPUMonitor(config=self.config)
+        self.file_monitor = FileIntegrityMonitor(config=self.config)
 
     def load_config(self, config_file: str) -> dict:
         """
@@ -49,6 +52,11 @@ class Monitor:
         while True:
             self.memory_monitor.check_memory_usage()
             time.sleep(self.check_interval)
+    
+    def start_file_monitor(self):
+        while True:
+            self.file_monitor.monitor_files()
+            time.sleep(self.check_interval)
 
     def start_disk_monitor(self):
         while True:
@@ -71,6 +79,7 @@ class Monitor:
         threading.Thread(target=self.service_monitor.start_monitoring, daemon=True).start()
         threading.Thread(target=self.start_iptables_monitor, daemon=True).start()
         threading.Thread(target=self.start_users_monitor, daemon=True).start()
+        threading.Thread(target=self.start_file_monitor, daemon=True).start()
 
 if __name__ == "__main__":
     monitor = Monitor(config_file="config.json")
