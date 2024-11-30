@@ -8,6 +8,7 @@ from vm_monitor.disk_monitor import DiskMonitor
 from vm_monitor.iptables_monitor import IptablesMonitor
 from vm_monitor.user_monitor import UsersMonitor
 from vm_monitor.file_monitor import FileIntegrityMonitor
+from vm_monitor.ssh_monitor import SSHMonitor
 
 
 class Monitor:
@@ -29,17 +30,9 @@ class Monitor:
         self.disk_monitor = DiskMonitor(config=self.config)
         self.cpu_monitor = CPUMonitor(config=self.config)
         self.file_monitor = FileIntegrityMonitor(config=self.config)
+        self.ssh_monitor = SSHMonitor(config=self.config)
 
     def load_config(self, config_file: str) -> dict:
-        """
-        Load the configuration from a file.
-
-        Args:
-            config_file (str): Path to the configuration file.
-
-        Returns:
-            dict: Configuration settings.
-        """
         with open(config_file, "r") as f:
             return json.load(f)
 
@@ -63,11 +56,20 @@ class Monitor:
             self.disk_monitor.check_disk_usage()
             time.sleep(self.check_interval)
 
+    def start_ssh_monitor(self):
+        while True:
+            self.ssh_monitor.monitor_ssh_failures()
+            time.sleep(self.check_interval)
+
     def start_iptables_monitor(self):
-        self.iptables_monitor.monitor_iptables()
+        while True:
+            self.iptables_monitor.monitor_iptables()
+            time.sleep(self.check_interval)
 
     def start_users_monitor(self):
-        self.users_monitor.monitor_users()
+        while True:
+            self.users_monitor.monitor_users()
+            time.sleep(self.check_interval)
 
     def start_all_monitors(self):
         """
@@ -80,6 +82,8 @@ class Monitor:
         threading.Thread(target=self.start_iptables_monitor, daemon=True).start()
         threading.Thread(target=self.start_users_monitor, daemon=True).start()
         threading.Thread(target=self.start_file_monitor, daemon=True).start()
+        threading.Thread(target=self.start_ssh_monitor, daemon=True).start()
+
 
 if __name__ == "__main__":
     monitor = Monitor(config_file="config.json")
