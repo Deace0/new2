@@ -1,9 +1,10 @@
 {
     "log_directory": "./logs",
-    "users_monitor": {
-        "snapshot_file": "users_snapshot.txt",
-        "check_interval": 60
-    },
+    
+    "cpu_threshold": 85,
+    "memory_threshold": 80,
+    "disk_threshold": 90,
+
     "service_monitor": {
         "whitelist_file": "service_whitelist.txt",
         "check_interval": 60
@@ -12,7 +13,13 @@
         "snapshot_file": "iptables_snapshot.txt",
         "check_interval": 60
     },
-    "cpu_threshold": 90,
-    "disk_threshold": 85,
-    "memory_threshold": 80
+    "users_monitor": {
+        "snapshot_file": "users_snapshot.txt",
+        "check_interval": 60
+    },
+    "file_monitor": {
+        "snapshot_file": "file_snapshot.txt",
+        "monitored_files": ["/etc/passwd", "/etc/shadow", "/etc/hosts"],
+        "check_interval": 60
+    }
 }
