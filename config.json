@@ -24,7 +24,8 @@
     },
     "ssh_monitor": {
         "log_file": "/var/log/auth.log",
-        "check_interval": 5
+        "check_interval": 5,
+        "max_failures": 3
     }
 
 }
