@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from collections import defaultdict
 from log_utils import configure_logging
 
 logger = configure_logging()
@@ -16,7 +17,9 @@ class SSHMonitor:
         self.logger = logger
         self.log_file = config["ssh_monitor"]["log_file"]
         self.check_interval = config["ssh_monitor"]["check_interval"]
+        self.max_failures = config["ssh_monitor"]["max_failures"]
         self.fail_pattern = re.compile(r"Failed password for (?P<user>\S+) from (?P<ip>\d+\.\d+\.\d+\.\d+)")
+        self.failures = defaultdict(int)
 
         if not os.path.exists(self.log_file):
             self.logger.error(f"Log file {self.log_file} does not exist. Please ensure the path is correct.")
@@ -28,7 +31,7 @@ class SSHMonitor:
         """
         try:
             with open(self.log_file, 'r') as log:
-                log.seek(0, os.SEEK_END) 
+                log.seek(0, os.SEEK_END)
                 while True:
                     line = log.readline()
                     if not line:
@@ -39,6 +42,21 @@ class SSHMonitor:
                     if match:
                         user = match.group("user")
                         ip = match.group("ip")
-                        self.logger.warning(f"Failed SSH login detected: User={user}, IP={ip}")
+
+                        self.failures[ip] += 1
+                        self.logger.info(f"Failed SSH login attempt: User={user}, IP={ip}, Attempts={self.failures[ip]}")
+
+                        if self.failures[ip] >= self.max_failures:
+                            self.logger.warning(f"Multiple failed SSH login attempts detected: IP={ip}, Attempts={self.failures[ip]}")
+                            self.take_action(ip)
         except Exception as e:
             self.logger.error(f"Error monitoring SSH logins: {str(e)}")
+
+    def take_action(self, ip: str):
+        """
+        Take action for excessive failed attempts (log or block IP).
+
+        Args:
+            ip (str): The offending IP address.
+        """
+        self.logger.warning(f"Taking action against IP: {ip}")
